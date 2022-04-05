@@ -19,7 +19,7 @@ public class Book {
     private Boolean borrowed;
     private LocalDate dateBorrewed;
 
-    
+
     // GETTER && SETTER
     public String getId() {
         return id;
