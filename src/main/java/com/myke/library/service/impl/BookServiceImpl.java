@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class BookServiceImpl implements BookService {
@@ -49,15 +50,17 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Book borrowBook(String id) {
+    public String borrowBook(String id) {
 
         var bookData = this.bookRepository.findById(id).orElseThrow();
         if (!bookData.getBorrowed()) {
             bookData.setBorrowed(true);
             bookData.setDateBorrewed(LocalDate.now());
-            return saveBook(bookData);
+            var book = saveBook(bookData);
+            return "Libro: " + book.getName() +" prestado!";
         } else {
-            return bookData;
+            return "No se puede prestar el libro: '"+ bookData.getName() +"'. Fue prestado" +
+                    " el día: "+ bookData.getDateBorrewed();
         }
 
     }
@@ -78,5 +81,11 @@ public class BookServiceImpl implements BookService {
     @Override
     public Book findByName(String name) {
         return this.bookRepository.findByName(name).orElseThrow();
+    }
+
+    @Override
+    public List<Book> findCategory(String category) {
+        return this.bookRepository.findAll().stream().filter(b -> b.getCategory().equals(category))
+                .collect(Collectors.toList());
     }
 }

@@ -4,20 +4,21 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Document(collection = "books")
 public class Book {
 
     // ATTRIBUTES
     @Id
-    private String id;
+    private String id = UUID.randomUUID().toString().substring(0, 10);
     private String isbn;
     private String name;
     private String author;
     private String category;
     private String type;
-    private Boolean borrowed;
-    private LocalDate dateBorrewed;
+    private Boolean borrowed = false;
+    private LocalDate dateBorrewed = null;
 
 
     // GETTER && SETTER

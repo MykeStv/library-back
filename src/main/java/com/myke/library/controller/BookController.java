@@ -3,6 +3,8 @@ package com.myke.library.controller;
 import com.myke.library.model.Book;
 import com.myke.library.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,7 +16,7 @@ public class BookController {
     @Autowired
     private BookService bookService;
 
-    @GetMapping(path = "/")
+    @GetMapping
     private List<Book> getBooks() {
         return this.bookService.getBooks();
     }
@@ -23,7 +25,7 @@ public class BookController {
         return this.bookService.getBookById(id);
     }
 
-    @PostMapping(path = "/")
+    @PostMapping
     private Book saveBook(@RequestBody Book book) {
         return this.bookService.saveBook(book);
     }
@@ -39,17 +41,31 @@ public class BookController {
     }
 
     @PutMapping(path = "/{id}/borrow")
-    private Book borrowBook(@PathVariable("id") String id) {
+    private String borrowBook(@PathVariable("id") String id) {
         return this.bookService.borrowBook(id);
     }
 
     @PutMapping(path = "/{id}/return")
-    private Book returnBook(@PathVariable("id") String id) {
-        return this.bookService.returnBook(id);
+    private ResponseEntity<String> returnBook(@PathVariable("id") String id) {
+        var book =  this.bookService.getBookById(id);
+        if(!book.getBorrowed()) {
+           return new ResponseEntity<>("No se puede devolver el libro porque no está prestado", HttpStatus.BAD_REQUEST);
+        } else {
+            this.bookService.returnBook(id);
+            return new ResponseEntity<>(
+                    "Libro devuelto satisfactoriamente",
+                    HttpStatus.OK
+            );
+        }
     }
 
-    @GetMapping(path = "/name/{name}")
-    private Book findBookName(@PathVariable("name") String name) {
+    @GetMapping(path = "/search")
+    private Book findBookName(@RequestParam("name") String name) {
         return this.bookService.findByName(name);
+    }
+
+    @GetMapping(path = "/category/{category}")
+    private List<Book> categoryRecommendations(@PathVariable("category") String category) {
+        return this.bookService.findCategory(category);
     }
 }

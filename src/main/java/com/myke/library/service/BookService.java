@@ -18,10 +18,12 @@ public interface BookService {
 
     Book deleteBook(String id);
 
-    Book borrowBook(String id);
+    String borrowBook(String id);
 
     Book returnBook(String id);
 
     Book findByName(String name);
+
+    List<Book> findCategory(String category);
 
 }
